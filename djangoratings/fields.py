@@ -354,11 +354,11 @@ class RatingField(IntegerField):
 
         setattr(cls, name, field)
 
-    def get_db_prep_save(self, value):
+    def get_db_prep_save(self, value, connection=None):
         # XXX: what happens here?
         pass
 
-    def get_db_prep_lookup(self, lookup_type, value):
+    def get_db_prep_lookup(self, lookup_type, value, connection=None, prepared=False):
         # TODO: hack in support for __score and __votes
         # TODO: order_by on this field should use the weighted algorithm
         raise NotImplementedError(self.get_db_prep_lookup)
@@ -366,9 +366,9 @@ class RatingField(IntegerField):
         #     lookup_type = 
         #     return self.score_field.get_db_prep_lookup()
         if lookup_type == 'exact':
-            return [self.get_db_prep_save(value)]
+            return [self.get_db_prep_save(value, connection)]
         elif lookup_type == 'in':
-            return [self.get_db_prep_save(v) for v in value]
+            return [self.get_db_prep_save(v, connection) for v in value]
         else:
             return super(RatingField, self).get_db_prep_lookup(lookup_type, value)
 
